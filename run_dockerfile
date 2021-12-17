@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+
+import subprocess
+from xml.dom.minidom import parse
+
+dom = parse("pom.xml")
+project = dom.getElementsByTagName("project").pop(0)
+fetchItems = ["version", "artifactId", "packaging"]
+fetchDict = {}
+for node in project.childNodes:
+    if node.nodeType == node.ELEMENT_NODE and node.tagName in fetchItems:
+        fetchDict[node.tagName] = node.firstChild.nodeValue
+
+serverPort = 0
+propFile = open("application.properties", "r")
+keyword = "server.port="
+for item in propFile.readlines():
+    if item[0 : len(keyword)] == keyword:
+        serverPort = int(item[len(keyword) :])
+propFile.close()
+
+commands = [
+    "docker",
+    "build",
+    "--build-arg",
+    "SERVER_PORT=%d" % serverPort,
+    "--build-arg",
+    "APP_FILE_NAME=%s-%s.%s"
+    % (fetchDict["artifactId"], fetchDict["version"], fetchDict["packaging"]),
+    ".",
+]
+print("Run docker build...")
+print(" ".join(commands))
+subprocess.call(commands)
