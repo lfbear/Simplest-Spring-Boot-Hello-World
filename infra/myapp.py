@@ -29,7 +29,7 @@ class MyAppStack(Stack):
             "arn:aws:ecr:%s:%d:repository/%s"
             % (
                 "us-west-2",
-                237794796217,
+                11111111111,
                 id,
             ),  # todo: replace with AWS_DEFAULT_REGION and AWS_ACCESS_KEY_ID
         )
