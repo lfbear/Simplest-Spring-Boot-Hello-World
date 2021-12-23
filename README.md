@@ -5,7 +5,7 @@
 - [`README.md`](README.md): Design document
 - [`Dockerfile`](Dockerfile) & [`run_dockerfile`](run_dockerfile): Static and dynamic Dockerfile
 - [`.github/workflows`](.github/workflows): CI/CD config files for github
-- [`infra/myapp.py`](infra/myapp.py): AWS CKD scripts for creating the infrastructure
+- [`infra`](infra): AWS CKD scripts for creating the infrastructure
 
 
 ## Design
@@ -42,20 +42,21 @@
                                                                    Infrastructure management
 ```
 
-### 详细说明
+### Details
 
-- CI部分: dockerfile
+- CI Part: dockerfile
 
-  + 采用多阶段构建，将构建环境和产物环境分开
-  + 辅助脚本 `run_dockerfile`，在pom.xml中制品或版本号变更时可以动态渲染docker build所需参数
-  + 单元测试：借助于github action，在push或者PR创建时进行单元测试验证
+  + Multistage build, separate build image and runtime image
+  + Script `run_dockerfile`，dynamicly call `docker build` by rendering parms from pom.xml for 'Dockerfile'
+  + Unit test：with github action，trigger at `push event` and `PR open`
 
-- 基础设施： AWS CDK
-  + 通过创建VPC，Cluster，TaskDefinition，LogGroup，FargateService资源创建serverless所需基础设施
-  + 通过创建Metric，SNS Topic,Alarm等资源完成使用cloudwatch功能发送报警邮件
+- Infrastructure: AWS CDK
+  + Creating VPC，Cluster，TaskDefinition，LogGroup，FargateService etc. for Serverless
+  + Creating Metric，SNS Topic,Alarm with cloudwatch to send warnning email
 
-- CD部分：
-  + 借助github action，在PR合并时进行镜像构建和发布（含基础实施创建）
+- CD Part:
+  + Setting applcation name and version in [infra/app.py](infra/app.py) ([CDK Usage](infra/README.md))
+  + with github action，trigger deployment at `PR closed`
 ---
 
 # Simplest-Spring-Boot-Hello-World
